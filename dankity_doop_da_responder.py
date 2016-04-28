@@ -52,7 +52,7 @@ def send_email(address, time):
 		warn = "Joe is facing unsually high levels of work today. He'll make an effort to respond as soon as he gets a chance."
 
 	# Create the body of the message (a plain-text and an HTML version).
-	text = "Hi, " + address + " ! This is an automated alert from a machine learning project Joe is doing. Joe will take approximately " + str(time) + " hours to respond to your email."
+	text = "Hi there! This is an automated alert from a machine learning project Joe is doing. Joe will take approximately " + str(time) + " hours to respond to your email."
 	html = """\
 	<html>
 	  <head>
@@ -67,7 +67,7 @@ def send_email(address, time):
 		</style>
 	  </head>
 	  <body>
-	    <h2 class="center">Hi there, """ + address + """!</h2>
+	    <h2 class="center">Hi there!</h2>
 	    <p>""" + warn + """</p>
 	    <p>Joe will take approximately <strong>""" + str(time) + """ hours</strong> to respond to your email.</p>
 	    <br />
