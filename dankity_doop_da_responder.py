@@ -106,31 +106,34 @@ def send_email(address, time, reply=None):
 class Autoresponder(Callback):
 
     def trigger(self):
-        print "Processing email from:", self.message['From']
-        e = {}
-        e['From'] = [t.lower() for t in self.message['From'].strip().split(' ') if t.strip() != '' and t[0] == '<'] if 'From' in self.message else []
-        e['From'] = e['From'][0]
-        e['To'] =  [t.lower() for t in self.message['To'].strip().split(' ') if t.strip() != ''] if 'To' in self.message else []
-        e['Cc'] =  [t.lower() for t in self.message['Cc'].strip().split(' ') if t.strip() != ''] if 'Cc' in self.message else []
+        try:
+            print "Processing email from:", self.message['From']
+            e = {}
+            e['From'] = [t.lower() for t in self.message['From'].strip().split(' ') if t.strip() != '' and t[0] == '<'] if 'From' in self.message else []
+            e['From'] = e['From'][0]
+            e['To'] =  [t.lower() for t in self.message['To'].strip().split(' ') if t.strip() != ''] if 'To' in self.message else []
+            e['Cc'] =  [t.lower() for t in self.message['Cc'].strip().split(' ') if t.strip() != ''] if 'Cc' in self.message else []
 
-        d_ = parsedate(self.message['Date'].strip())
-        e['Date'] = time.mktime(d_) if d_ else None
+            d_ = parsedate(self.message['Date'].strip())
+            e['Date'] = time.mktime(d_) if d_ else None
 
-        e['Body'] = self.get_email_body()
+            e['Body'] = self.get_email_body()
 
-        f = features_for_email(e)
+            f = features_for_email(e)
 
-        est = lr.predict(f)[0]
-        est = int(math.ceil(est))
+            est = lr.predict(f)[0]
+            est = int(math.ceil(est))
 
-        if "<joseph_engelman@brown.edu>" in e['To'] or "joseph_engelman@brown.edu" in e['To']:
-            if est > 2 and est < 168:
-                print "Sending email for " + str(est) + " hour estimate to " + e['From']
-                send_email(e['From'], est, reply=self.message['Message-ID'])
+            if "<joseph_engelman@brown.edu>" in e['To'] or "joseph_engelman@brown.edu" in e['To']:
+                if est > 2 and est < 168:
+                    print "Sending email for " + str(est) + " hour estimate to " + e['From']
+                    send_email(e['From'], est, reply=self.message['Message-ID'])
+                else:
+                    print "Did not send email for " + str(est) + " hour estimate to " + e['From']
             else:
-                print "Did not send email for " + str(est) + " hour estimate to " + e['From']
-        else:
-            print "Did not respond to " + e['From'] + " because the message was not directed to me"
+                print "Did not respond to " + e['From'] + " because the message was not directed to me"
+        except:
+            print "Error occurred - aborting..."
 
 
 mailbot = MailBot('imap.gmail.com', os.environ['GMAIL_USER'], os.environ['GMAIL_PASS'], port=993, ssl=True)
